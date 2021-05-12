@@ -1,0 +1,4 @@
+12/5/2021 : Must improve collisions. If two objects intersect for 2 consecutive frames
+they get trapped by the way the collision works. Also collisions occur before balls touch.
+Collisions also don't happen in the right directions. Resulting velocities are also wrong.
+Need to use momentum and proper directions, not just reverse velocities.

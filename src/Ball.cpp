@@ -22,7 +22,6 @@ Ball::~Ball()
 void Ball::initShape(const sf::RenderWindow& window)
 {
     //TODO set center of ball to be the it's center for gravity to work
-
     this->shape.setRadius(static_cast<float>(this->mass*2));
     this->shape.setFillColor(sf::Color::Cyan);
     this->shape.setPosition(
@@ -99,7 +98,7 @@ void Ball::updateAcceleration(Ball ball)
 
 void Ball::updateVelocity()
 {
-    if (this->vectorMagnitude(this->velocity + this->acceleration) <= 5){
+    if (this->vectorMagnitude(this->velocity + this->acceleration) <= 20){
         this->velocity += this->acceleration;
     }
 }

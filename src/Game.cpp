@@ -129,10 +129,7 @@ void Game::updateVelocity()
 
 void Game::updateCollision()
 {
-    // TODO Collisions
-    // Check if any two balls are intersecting
-        // if so, calculate their momentum, assume elastic collision (momentum conserved)
-        // have them rebounce with exact yet opposite speeds.
+    // TODO Fix collision according to backlog
 
     for (int i = 0; i < this->balls.size(); ++i)
     {
