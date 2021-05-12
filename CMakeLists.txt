@@ -18,5 +18,5 @@ if(SFML_FOUND)
     message(STATUS "SFML_VERSION: ${SFML_VERSION}")
 endif()
 
-add_executable(GravitySimulation src/main.cpp src/Game.cpp src/Game.h src/Game.cpp src/Game.h src/Player.cpp src/Player.h src/Ball.cpp src/Ball.h)
+add_executable(GravitySimulation src/main.cpp src/Game.cpp src/Game.h src/Game.cpp src/Game.h src/Ball.cpp src/Ball.h)
 target_link_libraries (GravitySimulation sfml-graphics sfml-window sfml-system)

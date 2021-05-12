@@ -11,26 +11,38 @@
 #include <SFML/Window.hpp>
 #include <SFML/Network.hpp>
 
-enum BallTypes {DEFAULT = 0, DAMAGING, HEALING, NUMTYPES};
 
 class Ball
 {
 private:
     sf::CircleShape shape;
     int type;
-    int
+    int mass;
+    sf::Vector2f velocity;
+    sf::Vector2f acceleration;
+
+    void initVariables();
     void initShape(const sf::RenderWindow& window);
 
 public:
-    Ball(const sf::RenderWindow& window, int type);
+    Ball(const sf::RenderWindow& window);
     virtual ~Ball();
 
     //Accessor
     const sf::CircleShape& getShape() const;
     const int& getType() const;
 
+    //setters
+
     //functions
+
     void update();
+    void updateAcceleration(Ball ball);
+    void resetAcceleration();
+    void updateVelocity();
+    void reverseVelocity();
+    float vectorMagnitude(sf::Vector2f vector);
+    void setMove();
     void render(sf::RenderTarget& target);
 };
 

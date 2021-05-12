@@ -39,6 +39,7 @@ void Game::update()
     if (!this->endGame)
     {
         this->updateCollision();
+        this->updateVelocity();
     }
 }
 
@@ -80,15 +81,69 @@ void Game::pollEvents()
 }
 
 
-void Game::updateCollision()
-{
-    // Check for collisions, do math here!
-}
-
 void Game::initBalls()
 {
     for (int i = 0; i < this->numBalls; ++i)
     {
-        this->balls.emplace_back(Ball(*this->window, rand()%BallTypes::NUMTYPES));
+        this->balls.emplace_back(Ball(*this->window));
+    }
+}
+
+void Game::updateVelocity()
+{
+
+
+    //For each ball, loop over all other balls
+    //reset acceleration
+    for (int i = 0; i < this->balls.size(); ++i)
+    {
+        this->balls[i].resetAcceleration();
+    }
+
+
+    // Calculate the acceleration of ball i wrt to all other balls
+    for (int i = 0; i < this->balls.size(); ++i)
+    {
+        for (int j = 0; j < this->balls.size(); ++j)
+        {
+            if (i != j)
+            {
+                this->balls[i].updateAcceleration(this->balls[j]);
+            }
+        }
+    }
+    // I Should have every balls acceleration
+    // now for each ball, change it's velocity
+    for (int i = 0; i < this->balls.size(); ++i)
+    {
+        this->balls[i].updateVelocity();
+    }
+
+    for (int i = 0; i < this->balls.size(); ++i)
+    {
+        this->balls[i].setMove();
+    }
+    // which then has to be translated into movement.
+
+}
+
+void Game::updateCollision()
+{
+    // TODO Collisions
+    // Check if any two balls are intersecting
+        // if so, calculate their momentum, assume elastic collision (momentum conserved)
+        // have them rebounce with exact yet opposite speeds.
+
+    for (int i = 0; i < this->balls.size(); ++i)
+    {
+        for (int j = i + 1; j < this->balls.size(); ++j)
+        {
+            if (this->balls[i].getShape().getGlobalBounds().intersects(this->balls[j].getShape().getGlobalBounds()))
+            {
+                // set their velocities to be equal but opposite
+                this->balls[i].reverseVelocity();
+                this->balls[j].reverseVelocity();
+            }
+        }
     }
 }

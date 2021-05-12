@@ -42,6 +42,7 @@ public:
     //Modifiers
 
     //Functions
+    void updateVelocity();
     void updateCollision();
     void update();
     void render();
