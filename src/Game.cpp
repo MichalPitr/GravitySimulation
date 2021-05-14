@@ -3,6 +3,7 @@
 //
 
 #include "Game.h"
+#include <cmath>
 
 //Constructors
 Game::Game()
@@ -29,7 +30,7 @@ void Game::initWindow()
 void Game::initVariables()
 {
     this->endGame = false;
-    this->numBalls = 4;
+    this->numBalls = 30;
     // init balls here
 }
 
@@ -95,9 +96,9 @@ void Game::updateVelocity()
 
     //For each ball, loop over all other balls
     //reset acceleration
-    for (int i = 0; i < this->balls.size(); ++i)
+    for (auto & ball : this->balls)
     {
-        this->balls[i].resetAcceleration();
+        ball.resetAcceleration();
     }
 
 
@@ -113,33 +114,53 @@ void Game::updateVelocity()
         }
     }
     // I Should have every balls acceleration
-    // now for each ball, change it's velocity
-    for (int i = 0; i < this->balls.size(); ++i)
+    // now for each ball, change it's velocity and move it accordingly
+    for (auto & ball : this->balls)
     {
-        this->balls[i].updateVelocity();
-    }
+        ball.updateVelocity();
+        ball.setMove();
 
-    for (int i = 0; i < this->balls.size(); ++i)
-    {
-        this->balls[i].setMove();
     }
-    // which then has to be translated into movement.
-
 }
 
 void Game::updateCollision()
 {
-    // TODO Fix collision according to backlog
-
     for (int i = 0; i < this->balls.size(); ++i)
     {
         for (int j = i + 1; j < this->balls.size(); ++j)
         {
-            if (this->balls[i].getShape().getGlobalBounds().intersects(this->balls[j].getShape().getGlobalBounds()))
+            // if the dist between balls <= the sum of their radiuses, then they are overlapping!
+            const sf::Vector2f collideVec = this->balls[i].getShape().getPosition() - this->balls[j].getShape().getPosition();
+            const float dist = sqrt(collideVec.x*collideVec.x + collideVec.y*collideVec.y);
+            const float minDist = this->balls[i].getShape().getRadius()+this->balls[j].getShape().getRadius();
+
+            if (dist < minDist)
             {
                 // set their velocities to be equal but opposite
-                this->balls[i].reverseVelocity();
-                this->balls[j].reverseVelocity();
+                const sf::Vector2f collideAxe = collideVec / dist;
+
+                this->balls[i].setRelativePosition(0.5f * (minDist - dist) * collideAxe);
+                this->balls[j].setRelativePosition(-0.5f * (minDist - dist) * collideAxe);
+
+                // Set
+                const sf::Vector2f momentum1_init = static_cast<float>(this->balls[i].getMass()) * this->balls[i].getVelocity();
+                const sf::Vector2f momentum2_init = static_cast<float>(this->balls[j].getMass()) * this->balls[j].getVelocity();
+
+                const sf::Vector2f momentum = momentum1_init + momentum2_init;
+                /*Calculates Velocities assuming perfectly elastic collisions
+                 1) V_1_i + V_1_f = V_2_i + V_2_f
+                 2) Conservation of momentum
+                 Express V2_final in terms of V_1_final
+                 Sub into conservation of momentum -> gets V2_final
+                 Sub V2_final back into first Eq to get V1_final
+                */
+                const sf::Vector2f V_2xm_1 = this->balls[j].getVelocity() * static_cast<float>(this->balls[i].getMass());
+                const sf::Vector2f V2_final = (momentum - V_2xm_1 + momentum1_init)/static_cast<float>(this->balls[i].getMass() + this->balls[j].getMass());
+                const sf::Vector2f V1_final = V2_final + this->balls[j].getVelocity() - this->balls[i].getVelocity();
+
+                // Scale to remove some energy from the system.
+                this->balls[i].setVelocity(0.9f*V1_final);
+                this->balls[j].setVelocity(0.9f*V2_final);
             }
         }
     }

@@ -1,11 +1,11 @@
 #include "Game.h"
 
 #include <iostream>
-#include <cctype>
+
 int main() {
 
     //initialize random seed
-    srand(static_cast<unsigned>(time(0)));
+    srand(static_cast<unsigned>(time(nullptr)));
 
     //initialize game object
     Game game;
