@@ -11,7 +11,7 @@ Game::Game()
     this->initVariables();
     this->initWindow();
     this->initBalls();
-
+    this->calculateCenterOfGravity();
 }
 
 Game::~Game()
@@ -30,8 +30,7 @@ void Game::initWindow()
 void Game::initVariables()
 {
     this->endGame = false;
-    this->numBalls = 30;
-    // init balls here
+    this->numBalls = 15;
 }
 
 void Game::update()
@@ -41,6 +40,7 @@ void Game::update()
     {
         this->updateCollision();
         this->updateVelocity();
+        this->calculateCenterOfGravity();
     }
 }
 
@@ -54,6 +54,12 @@ void Game::render()
         i.render(*this->window);
     }
 
+    // visualizes center of gravity! (assumes all balls have the same mass!)
+    sf::CircleShape centerOfGravity_shape;
+    centerOfGravity_shape.setRadius(3.f);
+    centerOfGravity_shape.setFillColor(sf::Color::Magenta);
+    centerOfGravity_shape.setPosition(this->centerOfGravity.x, this->centerOfGravity.y);
+    this->window->draw(centerOfGravity_shape);
     this->window->display();
 }
 
@@ -131,14 +137,13 @@ void Game::updateCollision()
         {
             // if the dist between balls <= the sum of their radiuses, then they are overlapping!
             const sf::Vector2f collideVec = this->balls[i].getShape().getPosition() - this->balls[j].getShape().getPosition();
-            const float dist = sqrt(collideVec.x*collideVec.x + collideVec.y*collideVec.y);
+            const float dist = std::sqrt(collideVec.x*collideVec.x + collideVec.y*collideVec.y);
             const float minDist = this->balls[i].getShape().getRadius()+this->balls[j].getShape().getRadius();
 
             if (dist < minDist)
             {
                 // set their velocities to be equal but opposite
                 const sf::Vector2f collideAxe = collideVec / dist;
-
                 this->balls[i].setRelativePosition(0.5f * (minDist - dist) * collideAxe);
                 this->balls[j].setRelativePosition(-0.5f * (minDist - dist) * collideAxe);
 
@@ -164,4 +169,17 @@ void Game::updateCollision()
             }
         }
     }
+}
+
+void Game::calculateCenterOfGravity()
+{
+    sf::Vector2f tempCenterOfGravity{0.f, 0.f};
+    for (const auto& ball : this->balls) {
+        tempCenterOfGravity.x += ball.getShape().getPosition().x;
+        tempCenterOfGravity.y += ball.getShape().getPosition().y;
+    }
+    tempCenterOfGravity.x = tempCenterOfGravity.x / this->balls.size();
+    tempCenterOfGravity.y = tempCenterOfGravity.y / this->balls.size();
+    this->centerOfGravity = tempCenterOfGravity;
+
 }

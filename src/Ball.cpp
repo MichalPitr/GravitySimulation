@@ -54,8 +54,8 @@ const int &Ball::getType() const
 
 void Ball::initVariables()
 {
-    this->mass = rand()%10 + 2;
-//    this->mass = 10;
+//    this->mass = rand()%10 + 5;
+    this->mass = 10;
     this->acceleration = sf::Vector2f(0.f, 0.f);
     // random initial velocity?
 //    this->velocity = sf::Vector2f(static_cast<float>(rand()%2), static_cast<float>(rand()%2));

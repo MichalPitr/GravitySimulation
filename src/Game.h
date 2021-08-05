@@ -26,6 +26,7 @@ private:
     sf::Event ev{};
 
     int numBalls{};
+    sf::Vector2f centerOfGravity{};
     std::vector<Ball> balls;
 
 
@@ -33,6 +34,7 @@ private:
     void initVariables();
     void initBalls();
     void initWindow();
+    void calculateCenterOfGravity();
 public:
     //Constructors and Destructors
     Game();
